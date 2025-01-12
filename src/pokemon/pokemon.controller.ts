@@ -25,4 +25,13 @@ export class PokemonController {
     async getPokemonByType(@Param('type') type: string) {
         return this.pokemonService.getPokemonByType(type);
     }
+
+    // Endpoint to compare two Pokémon
+    @Get('compare/:pokemon1/:pokemon2')
+    async comparePokemon(
+        @Param('pokemon1') pokemon1: string,
+        @Param('pokemon2') pokemon2: string,
+    ) {
+        return this.pokemonService.comparePokemon(pokemon1, pokemon2);
+    }
 }
