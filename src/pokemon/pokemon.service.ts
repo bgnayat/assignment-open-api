@@ -68,4 +68,49 @@ export class PokemonService {
             );
         }
     }
+
+    // Get Pokémon evolution chain
+    async getPokemonEvolutionChain(nameOrId: string) {
+        try {
+            // Step 1: Fetch Pokémon species data
+            const speciesResponse = await axios.get(`${this.baseUrl}/pokemon-species/${nameOrId}`);
+            const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
+
+            // Step 2: Fetch evolution chain data
+            const evolutionChainResponse = await axios.get(evolutionChainUrl);
+
+            // Step 3: Parse the evolution chain data
+            const chain = evolutionChainResponse.data.chain;
+            const evolutionList = this.parseEvolutionChain(chain);
+
+            return {
+                pokemon: nameOrId,
+                evolution_chain: evolutionList,
+            };
+        } catch (error) {
+            throw new HttpException(
+                `Failed to fetch evolution chain for Pokémon "${nameOrId}". Ensure the name or ID is correct.`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    // Helper function to parse the evolution chain
+    private parseEvolutionChain(chain: any): string[] {
+        const evolutions: string[] = [];
+
+        // Recursively traverse the evolution chain
+        const traverseChain = (node: any) => {
+            if (node) {
+                evolutions.push(node.species.name);
+                if (node.evolves_to.length > 0) {
+                    node.evolves_to.forEach((nextNode: any) => traverseChain(nextNode));
+                }
+            }
+        };
+
+        traverseChain(chain);
+        return evolutions;
+    }
+
 }

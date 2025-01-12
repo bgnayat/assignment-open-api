@@ -34,4 +34,11 @@ export class PokemonController {
     ) {
         return this.pokemonService.comparePokemon(pokemon1, pokemon2);
     }
+
+    // Endpoint to get Pokémon evolution chain
+    @Get('evolution-chain/:nameOrId')
+    async getPokemonEvolutionChain(@Param('nameOrId') nameOrId: string) {
+        return this.pokemonService.getPokemonEvolutionChain(nameOrId);
+    }
+
 }
